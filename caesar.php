@@ -1,7 +1,7 @@
 <?php
 require_once "keyGenerator.php"; // generator key
-require_once "encript.php"; // vigenere
-require_once "decript.php"; // vigenere
+require_once "Sistemul Caesar/caesarDecrypt.php";//caesar
+require_once "Sistemul Caesar/caesarEncrypt.php"; // caesar
 
 if(isset($_POST['crypt-btn'])){
     $ok = false;
@@ -12,8 +12,8 @@ if(isset($_POST['crypt-btn'])){
     endif;
     if($ok):
         $key = generateKey($text, $key_); // apelarea functiei care genereaza o cheie de lungimea textului folosinduse de cuvantul 'cheie' pe care utilizatorul il introduce
-        $cPromo = "Mesaj criptat: <br>";
-        $message_crypt = encript($text, $key);// apelarea functiei care cripteaza textul introdus de utilizator
+        $cPromo = "(Caesar)Mesaj criptat: <br>";
+        $message_crypt = encryptCaesar($text, $key);// apelarea functiei care cripteaza textul introdus de utilizator
         $cPromo = $cPromo . $message_crypt;
     else:
         $cPromo = "Textul si parola trebuie sa contina numai litere din alfabetul englezesc!";
@@ -28,15 +28,15 @@ if(isset($_POST['decrypt-btn'])){
     endif;
     if($ok):
         $key = generateKey($text, $key_); // apelarea functiei care genereaza o cheie de lungimea textului folosinduse de cuvantul 'cheie' pe care utilizatorul il introduce
-        $promo = "Text decriptat:<br> ";
-        $message_decrypt = decrypt($text, $key); // apelarea functiei care cripteaza textul introdus de utilizator
+        $promo = "(Caesar)Mesaj decriptat: <br>";
+        $message_decrypt = decryptCaesar($text, $key); // apelarea functiei care cripteaza textul introdus de utilizator
         $promo = $promo . $message_decrypt;
     else:
         $promo = "Textul si parola trebuie sa contina numai litere din alfabetul englezesc!";
     endif;
 }
-if(isset($_POST['caesar'])){
-    header("location: caesar.php");
+if(isset($_POST['vigenere'])){
+    header("location: index.php");
 }
 if(isset($_POST['vernam'])){
     header("location: vernam.php");
@@ -53,16 +53,16 @@ if(isset($_POST['vernam'])){
 <div class="container">
     <nav class="navbar navbar-light" style="background-color: transparent;">
         <form method="post">
-            <button class="btn btn-outline-success btn-sm" name="caesar" type="submit">Sistemul Caesar</button>
-            <button class="btn btn-outline-success btn-sm" name="vernam" type="submit">Sistemul Vernam</button>
-            <button class="btn btn-outline-success btn-sm" type="submit">Sistemul Thomas Jefferson</button>
+            <button class="btn btn-outline-success btn-sm" name="vigenere" type="submit">Sistemul Vigenere</button>
+            <button class="btn btn-outline-success btn-sm" name="vernam" type="subit">Sistemul Vernam</button>
+            <button class="btn btn-outline-success btn-sm" type="button">Sist. Thomas Jefferson</button>
         </form>
     </nav>
     <div class="switch">
-            <button type="submit" name="crypt-btn" id="crypt-btn" class="btn btn-primary" onclick="crypt()">Criptare</button>
-            <button type="submit" name="decrypt-btn" id="decrypt-btn" class="btn btn-outline-primary" onclick="decrypt()">Decriptare</button>
+        <button type="submit" name="crypt-btn" id="crypt-btn" class="btn btn-primary" onclick="crypt()">Criptare</button>
+        <button type="submit" name="decrypt-btn" id="decrypt-btn" class="btn btn-outline-primary" onclick="decrypt()">Decriptare</button>
     </div>
-    <div class="vigenere">
+    <div class="vigenere" id="vigenere">
         <div class="container-crypt">
             <form method="post" id="crypt-form">
                 <textarea name="message" rows="10" cols="50" placeholder="Introdu mesajul care doresti sa fie criptat aici."></textarea>
@@ -91,6 +91,8 @@ if(isset($_POST['vernam'])){
     var dBtn = document.getElementById("decrypt-btn");
     var cText = document.getElementById("text-criptat");
     var dText = document.getElementById("text-decriptat");
+    var vigenere = document.getElementById("vigenere");
+    var caesar = document.getElementById("caesar");
     function decrypt(){
         cForm.style.visibility="hidden";
         dForm.style.visibility="visible";
@@ -112,3 +114,4 @@ if(isset($_POST['vernam'])){
         cText.innerHTML = "";
     }
 </script>
+

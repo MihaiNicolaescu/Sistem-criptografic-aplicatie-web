@@ -58,3 +58,7 @@ body{
  #crypto-btn:hover{
      background-color: cornflowerblue;
  }
+
+navbar navbar-light{
+    width:500px;
+}
