@@ -18,11 +18,13 @@ if(isset($_POST['crypt-btn'])){
     endif;
 }
 if(isset($_POST['decrypt-btn'])){
-    $ok = false;
+    $ok = true;
     $text = $_POST['message-crypt'];
     $key = $_POST['key-wordd'];
-    if (preg_match('/[^A-Za-z]/', $text) && preg_match('/[^A-Za-z0-9]/', $text))
-        $ok = true;
+    if (preg_match('/[^A-Za-z]/', $text))
+        $ok = false;
+    if (!preg_match('/\s/',$text))//conditie pentru a verifica daca in text sunt introduse spatii
+        $ok=false;
     if($ok):
         $promo = "(Vernam)Mesaj decriptat: <br>";
         $message_decrypt = decrypt($text, $key); // apelarea functiei care cripteaza textul introdus de utilizator

@@ -41,16 +41,18 @@ if(isset($_POST['decrypt-btn'])){
     $key_ = $_POST['key-wordd'];
     if (preg_match('/^[\p{L} ]+$/u', $text)): //conditie pentru a verificara daca in parola exista spatii sau in text exista doar litere ale alfabetului englezesc
         $ok = true;
-        if (preg_match('/\s/',$text)):
+        if (preg_match('/\s/',$text))://conditie pentru a verifica daca in text sunt introduse spatii
             $ok=false;
         endif;
+        if(!preg_match('/^[0-9 +-]*$/', $key_))
+            $ok=false;
     endif;
     if($ok):
         $promo = "(Thomas Jefferson)Mesaj decriptat: <br>";
         $message_decrypt = decryptTJ($text, $key_); // apelarea functiei care decripteaza textul introdus de utilizator
         $promo = $promo . $message_decrypt;
     else:
-        $promo = "Textul si parola trebuie sa contina numai litere din alfabetul englezesc!";
+        $promo = "Textul trebuie sa contina numai litere din alfabetul englezesc!<br>Parola trebuie sa contina numai cifre si spatii!";
     endif;
 }
 if(isset($_POST['vigenere'])){
