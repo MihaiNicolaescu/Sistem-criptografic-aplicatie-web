@@ -41,6 +41,9 @@ if(isset($_POST['vigenere'])){
 if(isset($_POST['vernam'])){
     header("location: vernam.php");
 }
+if(isset($_POST['thomas'])){
+    header("location: thomasjefferson.php");
+}
 ?>
 <html>
 <head>
@@ -55,7 +58,7 @@ if(isset($_POST['vernam'])){
         <form method="post">
             <button class="btn btn-outline-success btn-sm" name="vigenere" type="submit">Sistemul Vigenere</button>
             <button class="btn btn-outline-success btn-sm" name="vernam" type="subit">Sistemul Vernam</button>
-            <button class="btn btn-outline-success btn-sm" type="button">Sist. Thomas Jefferson</button>
+            <button class="btn btn-outline-success btn-sm" name="thomas" type="submit">Sist. Thomas Jefferson</button>
         </form>
     </nav>
     <div class="switch">

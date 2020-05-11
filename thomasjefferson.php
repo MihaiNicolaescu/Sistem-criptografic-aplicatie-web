@@ -1,20 +1,36 @@
 <?php
-require_once "keyGenerator.php"; // generator key
-require_once "Sistemul Vigenere/encript.php"; // vigenere
-require_once "Sistemul Vigenere/decript.php"; // vigenere
-
+require_once "Thomas Jefferson/encryptTJ.php";
+require_once "Thomas Jefferson/decryptTJ.php";
+/*
+ * Criptarea se realizeaza astfel:
+ * textul introdus este pus pe discurile imaginare ale unui cilindru imaginar :)
+ * la urmatorul pas discurile se amesteca si se alege o linie de pe cilindru ca fiind textul criptat
+ * cheia este formata din pozitia originala pe care discurile amestecate o aveau
+ * ======
+ * Decriptarea se realizeaza astfel:
+ * folosind textul cirptat introdus de catre utilizator formam un nou cilindru care contine discuri formate atsfel
+ * Daca textul criptat este: GLM discurile vor fi urmatoarele
+ * GLM
+ * HMN
+ * INO
+ * pana cand se ajunge ca discurile sa contina toate literele alfabetului englezesc
+ * urmatoare etapa este de a aranja discurile in oridea data de cheie, dupa aceasta textul transmis se regaseste pe cilindru
+ */
 if(isset($_POST['crypt-btn'])){
     $ok = false;
-    $key_ = $_POST['key-word'];
     $text = $_POST['message'];
-    if (preg_match('/^[a-zA-Z]+$/', $key_) && preg_match('/^[\p{L} ]+$/u', $text)): //conditie pentru a verificara daca in parola exista spatii sau in text exista doar litere ale alfabetului englezesc + spatii
+    if (preg_match('/^[\p{L} ]+$/u', $text)): //conditie pentru a verificara daca in parola exista spatii sau in text exista doar litere ale alfabetului englezesc
         $ok = true;
+        if (preg_match('/\s/',$text)):
+            $ok=false;
+        endif;
     endif;
     if($ok):
-        $key = generateKey($text, $key_); // apelarea functiei care genereaza o cheie de lungimea textului folosinduse de cuvantul 'cheie' pe care utilizatorul il introduce
-        $cPromo = "Mesaj criptat: <br>";
-        $message_crypt = encript($text, $key);// apelarea functiei care cripteaza textul introdus de utilizator
-        $cPromo = $cPromo . $message_crypt;
+        $textPlusKey = explode(" | ",encrypt($text));
+        $encText = $textPlusKey[0];
+        $key = $textPlusKey[1];
+        $cPromo = "(Key): ". $key . "<br>(Thomas Jefferson)Mesaj criptat: <br>";
+        $cPromo = $cPromo . $encText;
     else:
         $cPromo = "Textul si parola trebuie sa contina numai litere din alfabetul englezesc!";
     endif;
@@ -23,26 +39,28 @@ if(isset($_POST['decrypt-btn'])){
     $ok = false;
     $text = $_POST['message-crypt'];
     $key_ = $_POST['key-wordd'];
-    if (preg_match('/^[a-zA-Z]+$/   ', $key_) && preg_match('/^[\p{L} ]+$/u', $text)): //conditie pentru a verificara daca in parola exista spatii sau in text exista doar litere ale alfabetului englezesc + spatii
+    if (preg_match('/^[\p{L} ]+$/u', $text)): //conditie pentru a verificara daca in parola exista spatii sau in text exista doar litere ale alfabetului englezesc
         $ok = true;
+        if (preg_match('/\s/',$text)):
+            $ok=false;
+        endif;
     endif;
     if($ok):
-        $key = generateKey($text, $key_); // apelarea functiei care genereaza o cheie de lungimea textului folosinduse de cuvantul 'cheie' pe care utilizatorul il introduce
-        $promo = "Text decriptat:<br> ";
-        $message_decrypt = decrypt($text, $key); // apelarea functiei care cripteaza textul introdus de utilizator
+        $promo = "(Thomas Jefferson)Mesaj decriptat: <br>";
+        $message_decrypt = decryptTJ($text, $key_); // apelarea functiei care decripteaza textul introdus de utilizator
         $promo = $promo . $message_decrypt;
     else:
         $promo = "Textul si parola trebuie sa contina numai litere din alfabetul englezesc!";
     endif;
 }
-if(isset($_POST['caesar'])){
-    header("location: caesar.php");
+if(isset($_POST['vigenere'])){
+    header("location: index.php");
 }
 if(isset($_POST['vernam'])){
     header("location: vernam.php");
 }
-if(isset($_POST['thomas'])){
-    header("location: thomasjefferson.php");
+if(isset($_POST['caesar'])){
+    header("location: caesar.php");
 }
 ?>
 <html>
@@ -56,20 +74,20 @@ if(isset($_POST['thomas'])){
 <div class="container">
     <nav class="navbar navbar-light" style="background-color: transparent;">
         <form method="post">
+            <button class="btn btn-outline-success btn-sm" name="vigenere" type="submit">Sistemul Vigenere</button>
+            <button class="btn btn-outline-success btn-sm" name="vernam" type="subit">Sistemul Vernam</button>
             <button class="btn btn-outline-success btn-sm" name="caesar" type="submit">Sistemul Caesar</button>
-            <button class="btn btn-outline-success btn-sm" name="vernam" type="submit">Sistemul Vernam</button>
-            <button class="btn btn-outline-success btn-sm" name="thomas" type="submit">Sistemul Thomas Jefferson</button>
         </form>
     </nav>
     <div class="switch">
-            <button type="submit" name="crypt-btn" id="crypt-btn" class="btn btn-primary" onclick="crypt()">Criptare</button>
-            <button type="submit" name="decrypt-btn" id="decrypt-btn" class="btn btn-outline-primary" onclick="decrypt()">Decriptare</button>
+        <button type="submit" name="crypt-btn" id="crypt-btn" class="btn btn-primary" onclick="crypt()">Criptare</button>
+        <button type="submit" name="decrypt-btn" id="decrypt-btn" class="btn btn-outline-primary" onclick="decrypt()">Decriptare</button>
     </div>
-    <div class="vigenere">
+    <div class="vigenere" id="vigenere">
         <div class="container-crypt">
             <form method="post" id="crypt-form">
                 <textarea name="message" rows="10" cols="50" placeholder="Introdu mesajul care doresti sa fie criptat aici."></textarea>
-                <input class="form-control" type="text" name="key-word" placeholder="Cuvantul cheie">
+                <input style="visibility: hidden"   class="form-control" type="text" name="key-word" placeholder="Cuvantul cheie">
                 <button class="btn-vigenege" type="submit" name="crypt-btn"><i class="material-icons">lock</i></button>
             </form>
         </div>
@@ -94,6 +112,8 @@ if(isset($_POST['thomas'])){
     var dBtn = document.getElementById("decrypt-btn");
     var cText = document.getElementById("text-criptat");
     var dText = document.getElementById("text-decriptat");
+    var vigenere = document.getElementById("vigenere");
+    var caesar = document.getElementById("caesar");
     function decrypt(){
         cForm.style.visibility="hidden";
         dForm.style.visibility="visible";
@@ -115,3 +135,4 @@ if(isset($_POST['thomas'])){
         cText.innerHTML = "";
     }
 </script>
+

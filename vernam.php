@@ -4,23 +4,25 @@ require_once "Sistemul Vernam/keyGenerator.php";
 require_once "Sistemul Vernam/decrypt.php";
 
 if(isset($_POST['crypt-btn'])){
-    $ok = false;
+    $ok = true;
     $text = $_POST['message'];
-    if (preg_match('/^[\p{L} ]+$/u', $text))
-        $ok = true;
+    if (preg_match('/[^A-Za-z]/', $text))
+        $ok = false;
     if($ok):
         $key = generateKeyVernam($text);
         $message_crypt = explode("|||", encrypt($text, $key));// apelarea functiei care cripteaza textul introdus de utilizator
         $cPromo = "(Vernam)Key: " . $message_crypt[1] . "<br>Mesaj criptat: <br>";
         $cPromo = $cPromo . $message_crypt[0];
     else:
-        $cPromo = "Textul si parola trebuie sa contina numai litere din alfabetul englezesc!";
+        $cPromo = "Textul si parola trebuie sa contina numai litere din alfabetul englezesc si sa nu contina spatii!";
     endif;
 }
 if(isset($_POST['decrypt-btn'])){
-    $ok = true;
+    $ok = false;
     $text = $_POST['message-crypt'];
     $key = $_POST['key-wordd'];
+    if (preg_match('/[^A-Za-z]/', $text) && preg_match('/[^A-Za-z0-9]/', $text))
+        $ok = true;
     if($ok):
         $promo = "(Vernam)Mesaj decriptat: <br>";
         $message_decrypt = decrypt($text, $key); // apelarea functiei care cripteaza textul introdus de utilizator
@@ -34,6 +36,9 @@ if(isset($_POST['vigenere'])){
 }
 if(isset($_POST['caesar'])){
     header("location: caesar.php");
+}
+if(isset($_POST['thomas'])){
+    header("location: thomasjefferson.php");
 }
 ?>
     <html>
@@ -49,7 +54,7 @@ if(isset($_POST['caesar'])){
             <form method="post">
                 <button class="btn btn-outline-success btn-sm" name="vigenere" type="submit">Sistemul Vigenere</button>
                 <button class="btn btn-outline-success btn-sm" name="caesar" type="submit">Caesar</button>
-                <button class="btn btn-outline-success btn-sm" type="button">Sistemul Thomas Jefferson</button>
+                <button class="btn btn-outline-success btn-sm" name="thomas" type="submit">Sistemul Thomas Jefferson</button>
             </form>
         </nav>
         <div class="switch">
